@@ -13,16 +13,19 @@ namespace AutoUpdaterDotNET
     {
         private readonly string _downloadURL;
 
+        private readonly string _installParameters;
+
         private string _tempPath;
 
         private WebClient _webClient;
 
-        public DownloadUpdateDialog(string downloadURL)
+        public DownloadUpdateDialog(string downloadURL, string InstallParameters = null)
         {
             InitializeComponent();
             AutoUpdater.UseSystemFont(this);
 
             _downloadURL = downloadURL;
+            _installParameters = InstallParameters;
         }
 
         private void DownloadUpdateDialogLoad(object sender, EventArgs e)
@@ -66,8 +69,9 @@ namespace AutoUpdaterDotNET
                 return;
             }
 
-            var processStartInfo = new ProcessStartInfo {FileName = _tempPath, UseShellExecute = true};
-            var extension = Path.GetExtension(_tempPath);
+            var processStartInfo = new ProcessStartInfo {FileName = _tempPath, UseShellExecute = true, Arguments = _installParameters};
+            
+           var extension = Path.GetExtension(_tempPath);
             if (extension != null && extension.ToLower().Equals(".zip"))
             {
                 string installerPath = Path.Combine(Path.GetTempPath(), "ZipExtractor.exe");

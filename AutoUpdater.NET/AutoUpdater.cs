@@ -56,6 +56,8 @@ namespace AutoUpdaterDotNET
 
         internal static Version InstalledVersion;
 
+        internal static string InstallParameters;
+
         internal static bool IsWinFormsApplication;
 
         internal static bool Running;
@@ -345,6 +347,10 @@ namespace AutoUpdaterDotNET
 
                                     args.DownloadURL = appCastUrl?.InnerText;
 
+                                    XmlNode InstallParameters = item.SelectSingleNode("installParameters");
+
+                                    args.InstallParameters = InstallParameters?.InnerText;
+
                                     XmlNode mandatory = item.SelectSingleNode("mandatory");
 
                                     Boolean.TryParse(mandatory?.InnerText, out Mandatory);
@@ -380,6 +386,7 @@ namespace AutoUpdaterDotNET
             ChangelogURL = args.ChangelogURL = GetURL(webResponse.ResponseUri, args.ChangelogURL);
             DownloadURL = args.DownloadURL = GetURL(webResponse.ResponseUri, args.DownloadURL);
             Mandatory = args.Mandatory;
+            InstallParameters = args.InstallParameters;
             webResponse.Close();
 
             if (Mandatory)
@@ -542,7 +549,7 @@ namespace AutoUpdaterDotNET
         /// </summary>
         public static bool DownloadUpdate()
         {
-            var downloadDialog = new DownloadUpdateDialog(DownloadURL);
+            var downloadDialog = new DownloadUpdateDialog(DownloadURL, InstallParameters);
 
             try
             {
@@ -610,6 +617,12 @@ namespace AutoUpdaterDotNET
         ///     Shows if the update is required or optional.
         /// </summary>
         public bool Mandatory { get; set; }
+
+        /// <summary>
+        ///     Give some parameters that should be passed to the installer
+        ///     ie : multi-instance MSI
+        /// </summary>
+        public string InstallParameters { get; set; }
     }
 
     /// <summary>
